@@ -1,5 +1,6 @@
 package com.sicredi.desafio.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sicredi.desafio.model.enumerations.StatusPautaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class Pauta extends EntidadeBase {
     private Long duracaoEmMinutos;
 
     @OneToMany(mappedBy = "pauta", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PautaOpcao> opcoes;
 
 }
