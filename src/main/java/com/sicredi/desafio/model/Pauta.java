@@ -26,8 +26,10 @@ public class Pauta extends EntidadeBase {
     @Column(nullable = false)
     private String descricao;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusPautaEnum status;
+
+    private Long duracaoEmMinutos;
 
     @OneToMany(mappedBy = "pauta", cascade = CascadeType.ALL)
     private List<PautaOpcao> opcoes;

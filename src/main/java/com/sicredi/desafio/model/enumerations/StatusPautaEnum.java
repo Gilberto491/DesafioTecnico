@@ -3,9 +3,8 @@ package com.sicredi.desafio.model.enumerations;
 public enum StatusPautaEnum {
     ABERTA("Pauta aberta para votação"),
     FECHADA("Pauta fechada"),
-    APROVADA("Pauta aprovada"),
-    REJEITADA("Pauta rejeitada"),
-    CANCELADA("Pauta cancelada");
+    CANCELADA("Pauta cancelada"),
+    CRIADA("Pauta criada");
 
     private final String descricao;
 
