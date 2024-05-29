@@ -23,7 +23,7 @@ public class PautaController {
     public ResponseEntity<Pauta> criarPauta(@Valid @RequestBody Pauta pauta) {
         try {
             Pauta novaPauta = pautaService.criarPauta(pauta);
-            logger.info("Pauta criada com sucesso: {}", novaPauta);
+            logger.info("Pauta criada com sucesso: {}", novaPauta.getTitulo());
             return new ResponseEntity<>(novaPauta, HttpStatus.CREATED);
         } catch (PautaException e) {
             logger.error("Erro ao criar pauta", e);
@@ -35,7 +35,7 @@ public class PautaController {
     public ResponseEntity<?> abrirSessaoVotacao(@PathVariable Long pautaId, @RequestParam(required = false) Long duracaoEmMinutos) {
         try {
             Pauta pauta = pautaService.abrirSessaoVotacao(pautaId, duracaoEmMinutos);
-            logger.info("Pauta aberta com sucesso: {}", pauta);
+            logger.info("Pauta aberta com sucesso: {}", pauta.getTitulo());
             return new ResponseEntity<>(pauta, HttpStatus.OK);
         } catch (PautaException e) {
             logger.error("Erro ao abrir sessão de votação para a pauta: {}", e.getMessage());
