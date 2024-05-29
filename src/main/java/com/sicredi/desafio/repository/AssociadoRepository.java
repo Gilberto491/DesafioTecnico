@@ -1,4 +1,4 @@
-package com.sicredi.desafio.model.repository;
+package com.sicredi.desafio.repository;
 
 import com.sicredi.desafio.model.Associado;
 import org.springframework.data.jpa.repository.JpaRepository;
