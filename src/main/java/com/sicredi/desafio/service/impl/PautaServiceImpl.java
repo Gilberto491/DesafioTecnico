@@ -1,5 +1,6 @@
 package com.sicredi.desafio.service.impl;
 
+import com.sicredi.desafio.dto.PautaDTO;
 import com.sicredi.desafio.model.Pauta;
 import com.sicredi.desafio.model.PautaOpcao;
 import com.sicredi.desafio.model.enumerations.StatusPautaEnum;
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,13 +26,22 @@ public class PautaServiceImpl implements PautaService {
     private final ScheduledExecutorService scheduler;
 
     @Override
-    public Pauta criarPauta(Pauta pauta) {
+    public Pauta criarPauta(PautaDTO pautaDTO) {
 
-        for (PautaOpcao opcao : pauta.getOpcoes()) {
-            opcao.setPauta(pauta);
-        }
-
+        Pauta pauta = new Pauta();
+        pauta.setTitulo(pautaDTO.getTitulo());
+        pauta.setDescricao(pautaDTO.getDescricao());
         pauta.setStatus(StatusPautaEnum.CRIADA);
+
+        List<PautaOpcao> opcoes = pautaDTO.getOpcoes().stream().map(opcaoDTO -> {
+            PautaOpcao opcao = new PautaOpcao();
+            opcao.setTitulo(opcaoDTO.getTitulo());
+            opcao.setPauta(pauta);
+            return opcao;
+        }).collect(Collectors.toList());
+
+        pauta.setOpcoes(opcoes);
+
         return pautaRepository.save(pauta);
     }
 
@@ -41,18 +53,19 @@ public class PautaServiceImpl implements PautaService {
             if (!StatusPautaEnum.CRIADA.equals(pauta.getStatus())) {
                 throw new RuntimeException("A pauta já foi iniciada ou está fechada.");
             }
+
             pauta.setStatus(StatusPautaEnum.ABERTA);
-            pauta.setDuracaoEmMinutos(duracaoEmMinutos != null ? duracaoEmMinutos : 1);
+            duracaoEmMinutos = duracaoEmMinutos != null ? duracaoEmMinutos : 1;
             pauta.setDataAtualizacao(LocalDateTime.now());
-            agendarFechamentoSessao(pauta);
+            agendarFechamentoSessao(pauta, duracaoEmMinutos);
 
             return pautaRepository.save(pauta);
         }
         throw new RuntimeException("Pauta não encontrada.");
     }
 
-    private void agendarFechamentoSessao(Pauta pauta) {
-        LocalDateTime dataFim = pauta.getDataAtualizacao().plusMinutes(pauta.getDuracaoEmMinutos());
+    private void agendarFechamentoSessao(Pauta pauta, long duracaoEmMinutos) {
+        LocalDateTime dataFim = pauta.getDataAtualizacao().plusMinutes(duracaoEmMinutos);
         long delay = dataFim.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis();
 
         scheduler.schedule(() -> {

@@ -30,8 +30,6 @@ public class Pauta extends EntidadeBase {
     @Enumerated(EnumType.STRING)
     private StatusPautaEnum status;
 
-    private Long duracaoEmMinutos;
-
     @OneToMany(mappedBy = "pauta", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<PautaOpcao> opcoes;
