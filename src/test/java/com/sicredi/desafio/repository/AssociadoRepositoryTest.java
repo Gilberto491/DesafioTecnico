@@ -25,7 +25,7 @@ public class AssociadoRepositoryTest {
         associado.setNome("Teste Associado");
         associado.setDataCriacao(LocalDateTime.now());
 
-        associado = associadoRepository.save(associado);
+        associadoRepository.save(associado);
 
         List<Associado> associados = associadoRepository.findAll();
         assertThat(associados).hasSize(1);
