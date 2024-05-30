@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PautaVotacaoRepository extends JpaRepository<PautaVotacao, Long> {
-    boolean existsByAssociadoIdAndPautaOpcaoId(Long associadoId, Long pautaOpcaoId);
+    boolean existsByAssociadoIdAndPautaOpcaoPautaId(Long associadoId, Long pautaOpcaoId);
 }

@@ -47,7 +47,7 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
 
         validarPautaAberta(pauta);
         validarOpcaoPautaPertencePautaEspecificada(pautaOpcao.getPauta(), pautaId);
-        validarAssociadoJaVotou(votoDTO);
+        validarAssociadoJaVotou(votoDTO.getAssociadoId(), pautaId);
 
         PautaVotacao novoVoto = new PautaVotacao();
         novoVoto.setAssociado(associado);
@@ -91,9 +91,9 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
         }
     }
 
-    private void validarAssociadoJaVotou(VotoDTO votoDTO) {
-        boolean jaVotou = pautaVotacaoRepository.existsByAssociadoIdAndPautaOpcaoId(
-                votoDTO.getAssociadoId(), votoDTO.getPautaOpcaoId());
+    private void validarAssociadoJaVotou(Long associadoId, Long pautaId) {
+        boolean jaVotou = pautaVotacaoRepository.existsByAssociadoIdAndPautaOpcaoPautaId(
+                associadoId, pautaId);
         if (jaVotou) {
             throw new IllegalArgumentException("Associado já votou nesta pauta");
         }

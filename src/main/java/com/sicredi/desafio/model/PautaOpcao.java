@@ -23,6 +23,7 @@ public class PautaOpcao extends EntidadeBase {
     @JsonBackReference
     private Pauta pauta;
 
+    @Column(nullable = false)
     private String titulo;
 
     private Long votosRecebidos = 0L;
