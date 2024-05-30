@@ -36,8 +36,6 @@ public class PautaControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    String url = "/pauta/v1/";
-
     @Test
     public void testCriarPauta() throws Exception {
 
@@ -52,7 +50,7 @@ public class PautaControllerTest {
 
         Mockito.when(pautaService.criarPauta(Mockito.any(PautaDTO.class))).thenReturn(pauta);
 
-        mockMvc.perform(post(url + "criar")
+        mockMvc.perform(post("/pauta/v1/criar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pautaDTO)))
                 .andExpect(status().isCreated())
@@ -71,7 +69,7 @@ public class PautaControllerTest {
 
         Mockito.when(pautaService.abrirSessaoVotacao(pautaId, dto.getDuracaoEmMinutos())).thenReturn(pauta);
 
-        mockMvc.perform(post(url + "abrir-sessao/{pautaId}", pautaId)
+        mockMvc.perform(post("/pauta/v1/abrir-sessao/{pautaId}", pautaId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -84,7 +82,7 @@ public class PautaControllerTest {
 
         Mockito.doNothing().when(pautaService).cancelarPauta(pautaId);
 
-        mockMvc.perform(get(url + "cancelar/{pautaId}", pautaId))
+        mockMvc.perform(get("/pauta/v1/cancelar/{pautaId}", pautaId))
                 .andExpect(status().isOk());
     }
 
@@ -97,7 +95,7 @@ public class PautaControllerTest {
         Mockito.when(pautaService.criarPauta(Mockito.any(PautaDTO.class)))
                 .thenThrow(new PautaException("Erro ao criar pauta"));
 
-        mockMvc.perform(post(url + "criar")
+        mockMvc.perform(post("/pauta/v1/criar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pautaDTO)))
                 .andExpect(status().isBadRequest());
@@ -112,7 +110,7 @@ public class PautaControllerTest {
         Mockito.when(pautaService.abrirSessaoVotacao(pautaId, dto.getDuracaoEmMinutos()))
                 .thenThrow(new RuntimeException("A pauta já foi iniciada ou está fechada."));
 
-        mockMvc.perform(post(url + "abrir-sessao/{pautaId}", pautaId)
+        mockMvc.perform(post("/pauta/v1/abrir-sessao/{pautaId}", pautaId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -125,7 +123,7 @@ public class PautaControllerTest {
         Mockito.doThrow(new RuntimeException("A pauta não está aberta nem criada."))
                 .when(pautaService).cancelarPauta(pautaId);
 
-        mockMvc.perform(get(url + "cancelar/{pautaId}", pautaId))
+        mockMvc.perform(get("/pauta/v1/cancelar/{pautaId}", pautaId))
                 .andExpect(status().isBadRequest());
     }
 
