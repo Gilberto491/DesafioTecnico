@@ -6,12 +6,15 @@ import com.sicredi.desafio.model.PautaOpcao;
 import com.sicredi.desafio.model.enumerations.StatusPautaEnum;
 import com.sicredi.desafio.repository.PautaRepository;
 import com.sicredi.desafio.service.PautaService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,11 +22,14 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@EnableScheduling
 public class PautaServiceImpl implements PautaService {
 
     private final PautaRepository pautaRepository;
 
     private final ScheduledExecutorService scheduler;
+
+    private final SessaoFechamentoService sessaoFechamentoService;
 
     @Override
     public Pauta criarPauta(PautaDTO pautaDTO) {
@@ -46,6 +52,7 @@ public class PautaServiceImpl implements PautaService {
     }
 
     @Override
+    @Transactional
     public Pauta abrirSessaoVotacao(Long pautaId, Long duracaoEmMinutos) {
         Optional<Pauta> pautaOptional = pautaRepository.findById(pautaId);
         if (pautaOptional.isPresent()) {
@@ -64,20 +71,20 @@ public class PautaServiceImpl implements PautaService {
         throw new RuntimeException("Pauta não encontrada.");
     }
 
-    private void agendarFechamentoSessao(Pauta pauta, long duracaoEmMinutos) {
+    public void agendarFechamentoSessao(Pauta pauta, long duracaoEmMinutos) {
         LocalDateTime dataFim = pauta.getDataAtualizacao().plusMinutes(duracaoEmMinutos);
         long delay = dataFim.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - System.currentTimeMillis();
 
-        scheduler.schedule(() -> {
-            pauta.setStatus(StatusPautaEnum.FECHADA);
-            pautaRepository.save(pauta);
-        }, delay, TimeUnit.MILLISECONDS);
+        scheduler.schedule(() -> sessaoFechamentoService.fecharSessao(pauta.getId()), delay, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void cancelarPauta(Long pautaId) {
+
         Optional<Pauta> pautaOptional = pautaRepository.findById(pautaId);
-        Pauta pauta = pautaOptional.get();
+        Pauta pauta = pautaOptional.orElseThrow(()
+                -> new NoSuchElementException("Pauta não encontrada"));
+
         if (StatusPautaEnum.ABERTA.equals(pauta.getStatus()) || StatusPautaEnum.CRIADA.equals(pauta.getStatus())) {
             pauta.setStatus(StatusPautaEnum.CANCELADA);
             pauta.setDataAtualizacao(LocalDateTime.now());

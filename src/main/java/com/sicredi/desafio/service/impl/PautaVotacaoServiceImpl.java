@@ -12,47 +12,71 @@ import com.sicredi.desafio.repository.PautaOpcaoRepository;
 import com.sicredi.desafio.repository.PautaRepository;
 import com.sicredi.desafio.repository.PautaVotacaoRepository;
 import com.sicredi.desafio.service.PautaVotacaoService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
 public class PautaVotacaoServiceImpl implements PautaVotacaoService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     private final PautaVotacaoRepository pautaVotacaoRepository;
     private final PautaOpcaoRepository pautaOpcaoRepository;
     private final AssociadoRepository associadoRepository;
     private final PautaRepository pautaRepository;
 
     @Override
+    @Transactional
     public void registrarVoto(Long pautaId, VotoDTO votoDTO) {
-        Optional<Associado> associadoOpt = associadoRepository.findById(votoDTO.getAssociadoId());
-        Optional<PautaOpcao> pautaOpcoesOpt = pautaOpcaoRepository.findById(votoDTO.getPautaOpcaoId());
 
-        PautaOpcao pautaOpcoes = pautaOpcoesOpt.get();
+        Associado associado = buscarAssociado(votoDTO.getAssociadoId());
+        PautaOpcao pautaOpcao = buscarPautaOpcao(votoDTO.getPautaOpcaoId());
+        Pauta pauta = buscarPauta(pautaId);
 
-        validarPautaAberta(pautaOpcoes.getPauta());
-        validarAssociadoOuOpcaoPauta(associadoOpt);
-        validarOpcaoPautaPertencePautaEspecificada(pautaOpcoes.getPauta(), pautaId);
+        entityManager.clear();
+
+        validarPautaAberta(pauta);
+        validarOpcaoPautaPertencePautaEspecificada(pautaOpcao.getPauta(), pautaId);
         validarAssociadoJaVotou(votoDTO);
 
         PautaVotacao novoVoto = new PautaVotacao();
-        novoVoto.setAssociado(associadoOpt.get());
-        novoVoto.setPautaOpcao(pautaOpcoesOpt.get());
+        novoVoto.setAssociado(associado);
+        novoVoto.setPautaOpcao(pautaOpcao);
         novoVoto.setDataAtualizacao(LocalDateTime.now());
 
         pautaVotacaoRepository.save(novoVoto);
 
-        pautaOpcoes.setVotosRecebidos(pautaOpcoes.getVotosRecebidos() + 1);
-        pautaOpcoes.setDataAtualizacao(LocalDateTime.now());
-        pautaOpcaoRepository.save(pautaOpcoes);
+        pautaOpcao.setVotosRecebidos(pautaOpcao.getVotosRecebidos() + 1);
+        pautaOpcao.setDataAtualizacao(LocalDateTime.now());
+        pautaOpcaoRepository.save(pautaOpcao);
 
+        entityManager.flush();
+
+    }
+
+    private Associado buscarAssociado(Long associadoId) {
+        return associadoRepository.findById(associadoId)
+                .orElseThrow(() -> new NoSuchElementException("Associado não encontrado"));
+    }
+
+    private PautaOpcao buscarPautaOpcao(Long pautaOpcaoId) {
+        return pautaOpcaoRepository.findById(pautaOpcaoId)
+                .orElseThrow(() -> new NoSuchElementException("Opção de pauta não encontrada"));
+    }
+
+    private Pauta buscarPauta(Long pautaId) {
+        return pautaRepository.findById(pautaId)
+                .orElseThrow(() -> new NoSuchElementException("Pauta não encontrada"));
     }
 
     private void validarPautaAberta(Pauta pauta) {
@@ -61,14 +85,8 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
         }
     }
 
-    private void validarAssociadoOuOpcaoPauta(Optional<Associado> associadoOpt) {
-        if (associadoOpt.isEmpty()) {
-            throw new IllegalArgumentException("Associado ou opção de pauta inválida");
-        }
-    }
-
     private void validarOpcaoPautaPertencePautaEspecificada(Pauta pauta, Long pautaId) {
-        if (pauta.getId().equals(pautaId)) {
+        if (!pauta.getId().equals(pautaId)) {
             throw new IllegalArgumentException("A opção de pauta não pertence à pauta especificada");
         }
     }
@@ -86,12 +104,12 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
         List<PautaOpcao> opcoes = pautaOpcaoRepository.findByPautaId(pautaId);
         Map<String, Long> resultado = new HashMap<>();
 
+        Pauta pauta = pautaRepository.findById(pautaId).orElseThrow(() -> new IllegalArgumentException("Pauta não encontrada"));
+        validarPautaFechada(pauta);
+
         for (PautaOpcao opcao : opcoes) {
             resultado.put(opcao.getTitulo(), opcao.getVotosRecebidos());
         }
-
-        Pauta pauta = pautaRepository.findById(pautaId).orElseThrow(() -> new IllegalArgumentException("Pauta não encontrada"));
-        validarPautaFechada(pauta);
 
         ResultadoVotacaoDTO resultadoVotacaoDTO = new ResultadoVotacaoDTO();
         resultadoVotacaoDTO.setPautaId(pautaId);
