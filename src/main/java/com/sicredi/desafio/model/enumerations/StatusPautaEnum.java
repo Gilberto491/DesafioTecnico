@@ -12,7 +12,4 @@ public enum StatusPautaEnum {
         this.descricao = descricao;
     }
 
-    public String getDescricao() {
-        return descricao;
-    }
 }

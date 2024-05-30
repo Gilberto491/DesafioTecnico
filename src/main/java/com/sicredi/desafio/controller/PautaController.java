@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("/pauta/v1")
 @AllArgsConstructor
@@ -39,8 +41,11 @@ public class PautaController {
     @GetMapping("/cancelar/{pautaId}")
     public ResponseEntity<?> cancelarPauta(@PathVariable Long pautaId) {
         pautaService.cancelarPauta(pautaId);
-        logger.info("Pauta cancelada com sucesso");
-        return new ResponseEntity<>(HttpStatus.OK);
+        String info = "Pauta cancelada com sucesso";
+        HashMap<String, String> resposta = new HashMap<>();
+        resposta.put("message", info);
+        logger.info(info);
+        return new ResponseEntity<>(resposta, HttpStatus.OK);
     }
 
 }
