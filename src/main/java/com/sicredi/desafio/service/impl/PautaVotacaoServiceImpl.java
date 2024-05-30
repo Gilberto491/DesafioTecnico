@@ -121,7 +121,7 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
 
     private void validarPautaFechada(Pauta pauta) {
         if (!pauta.getStatus().equals(StatusPautaEnum.FECHADA)) {
-            throw new IllegalArgumentException("Não é possivel visualizar o resultado pois a votação ainda não foi encerrada");
+            throw new IllegalArgumentException("Não é possivel visualizar o resultado pois a votação não tem o status fechada");
         }
     }
 

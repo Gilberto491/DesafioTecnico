@@ -25,6 +25,10 @@ public class SessaoFechamentoService {
         Pauta pauta = pautaRepository.findById(pautaId)
                 .orElseThrow(() -> new NoSuchElementException("Pauta não encontrada"));
 
+        if (StatusPautaEnum.CANCELADA.equals(pauta.getStatus())) {
+            return;
+        }
+
         List<PautaOpcao> opcoes = pautaOpcaoRepository.findByPautaId(pautaId);
 
         pauta.setStatus(StatusPautaEnum.FECHADA);
