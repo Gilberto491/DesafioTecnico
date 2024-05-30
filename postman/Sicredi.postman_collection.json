@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "31c9b9d8-d826-47c1-a7b0-9f14197548e0",
+		"name": "Sicredi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23292018"
+	},
+	"item": [
+		{
+			"name": "criar pauta",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"titulo\": \"Pauta exemplo 2\",\r\n  \"descricao\": \"descricao da pauta de exemplo 2\",\r\n  \"opcoes\": [\r\n    {\r\n      \"titulo\": \"opt1\"\r\n    },\r\n    {\r\n      \"titulo\": \"opt2\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url-pauta}}/criar",
+					"host": [
+						"{{url-pauta}}"
+					],
+					"path": [
+						"criar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "abrir sessão",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"duracaoEmMinutos\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url-pauta}}/abrir-sessao/1",
+					"host": [
+						"{{url-pauta}}"
+					],
+					"path": [
+						"abrir-sessao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cancelar pauta",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url-pauta}}/cancelar/1",
+					"host": [
+						"{{url-pauta}}"
+					],
+					"path": [
+						"cancelar",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "votar na pauta",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"associadoId\": 4,\r\n  \"pautaOpcaoId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url-votacao}}/votar/1",
+					"host": [
+						"{{url-votacao}}"
+					],
+					"path": [
+						"votar",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resultado da pauta",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url-votacao}}/resultado/1",
+					"host": [
+						"{{url-votacao}}"
+					],
+					"path": [
+						"resultado",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
