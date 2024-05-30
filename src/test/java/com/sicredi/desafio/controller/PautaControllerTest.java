@@ -17,8 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,7 +82,7 @@ public class PautaControllerTest {
 
         Mockito.doNothing().when(pautaService).cancelarPauta(pautaId);
 
-        mockMvc.perform(get("/pauta/v1/cancelar/{pautaId}", pautaId))
+        mockMvc.perform(put("/pauta/v1/cancelar/{pautaId}", pautaId))
                 .andExpect(status().isOk());
     }
 
@@ -123,7 +123,7 @@ public class PautaControllerTest {
         Mockito.doThrow(new RuntimeException("A pauta não está aberta nem criada."))
                 .when(pautaService).cancelarPauta(pautaId);
 
-        mockMvc.perform(get("/pauta/v1/cancelar/{pautaId}", pautaId))
+        mockMvc.perform(put("/pauta/v1/cancelar/{pautaId}", pautaId))
                 .andExpect(status().isBadRequest());
     }
 

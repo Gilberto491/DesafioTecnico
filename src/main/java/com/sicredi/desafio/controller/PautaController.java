@@ -38,7 +38,7 @@ public class PautaController {
         return new ResponseEntity<>(pauta, HttpStatus.OK);
     }
 
-    @GetMapping("/cancelar/{pautaId}")
+    @PutMapping("/cancelar/{pautaId}")
     public ResponseEntity<?> cancelarPauta(@PathVariable Long pautaId) {
         pautaService.cancelarPauta(pautaId);
         String info = "Pauta cancelada com sucesso";

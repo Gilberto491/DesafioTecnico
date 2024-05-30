@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"titulo\": \"Pauta exemplo 2\",\r\n  \"descricao\": \"descricao da pauta de exemplo 2\",\r\n  \"opcoes\": [\r\n    {\r\n      \"titulo\": \"opt1\"\r\n    },\r\n    {\r\n      \"titulo\": \"opt2\"\r\n    }\r\n  ]\r\n}",
+					"raw": "{\r\n  \"titulo\": \"Pauta exemplo 1\",\r\n  \"descricao\": \"descricao da pauta de exemplo 1\",\r\n  \"opcoes\": [\r\n    {\r\n      \"titulo\": \"opt1\"\r\n    },\r\n    {\r\n      \"titulo\": \"opt2\"\r\n    }\r\n  ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -62,7 +62,7 @@
 		{
 			"name": "cancelar pauta",
 			"request": {
-				"method": "GET",
+				"method": "PUT",
 				"header": [],
 				"url": {
 					"raw": "{{url-pauta}}/cancelar/1",

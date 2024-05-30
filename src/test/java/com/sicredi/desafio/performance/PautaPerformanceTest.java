@@ -23,8 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -147,7 +147,7 @@ public class PautaPerformanceTest {
 
         return () -> {
             try {
-                mockMvc.perform(get("/pauta/v1/cancelar/{pautaId}", pautaId))
+                mockMvc.perform(put("/pauta/v1/cancelar/{pautaId}", pautaId))
                         .andExpect(status().isOk());
             } catch (Exception e) {
                 e.printStackTrace();
