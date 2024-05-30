@@ -6,7 +6,7 @@ Esta API permite a criação de pautas para votação. As pautas só podem ser v
 ## Endpoints da API
 - **Criação de pauta:** `POST /pauta/v1/criar`
 - **Abrir sessão da pauta:** `POST /pauta/v1/abrir-sessao/{id}`
-- **Cancelar a pauta:** `GET /pauta/v1/cancelar/{id}`
+- **Cancelar a pauta:** `PUT /pauta/v1/cancelar/{id}`
 - **Votar na pauta:** `POST /votacao/v1/votar/{id}`
 - **Visualizar resultado da pauta:** `GET /votacao/v1/resultado/{id}`
 
@@ -50,6 +50,9 @@ Além disso, uma coleção do Postman contendo todos os endpoints e exemplos est
 - Criação de pauta e tentativa de obter resultado depois de fechar a sessão.
 - Criação de pauta e tentativa de obter resultado de uma pauta inválida.
 
+## Orientações para Teste
+Para facilitar os testes, dentro da pasta sql em resources há um script para executar os inserts dos associados. Caso queira testar apenas os endpoints de abrir sessão, cancelar pauta, votar na pauta e resultado da pauta, também há inserts para as tabelas pauta e pauta_opcao.
+
 ## Tarefas Bônus
 - **Tarefa Bônus 1:** A API de validação não está funcionando, porém eu utilizaria a biblioteca OpenFeign para consultar a validade de um CPF.
 - **Tarefa Bônus 2:** Testes de performance com Threads para enviar uma quantidade de requisições e verificar o tempo de resposta. Estes testes estão incluídos no código.
@@ -59,3 +62,18 @@ Além disso, uma coleção do Postman contendo todos os endpoints e exemplos est
 1. Clone o repositório:
    ```sh
    git clone https://github.com/Gilberto491/DesafioTecnico.git
+   ```
+
+2. Importe o projeto em sua IDE de preferência.
+
+3. Instale e configure o pgAdmin para utilizar o PostgreSQL.
+
+4. Configure o arquivo application.properties com os dados do seu banco de dados PostgreSQL:
+
+   ```sh
+   spring.datasource.username=SEU_USUARIO
+   spring.datasource.password=SUA_SENHA
+    ```
+5. Certifique-se de que você está usando o JDK 17.
+
+6. Agora, é só iniciar a aplicação :)
