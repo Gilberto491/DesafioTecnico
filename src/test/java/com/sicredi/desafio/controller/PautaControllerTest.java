@@ -1,8 +1,8 @@
 package com.sicredi.desafio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sicredi.desafio.dto.AbrirSessaoVotacaoDTO;
-import com.sicredi.desafio.dto.PautaDTO;
+import com.sicredi.desafio.dto.request.AbrirSessaoVotacaoDTO;
+import com.sicredi.desafio.dto.request.PautaDTO;
 import com.sicredi.desafio.exception.PautaException;
 import com.sicredi.desafio.model.Pauta;
 import com.sicredi.desafio.service.PautaService;
