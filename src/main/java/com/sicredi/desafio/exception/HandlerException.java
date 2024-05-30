@@ -1,5 +1,7 @@
 package com.sicredi.desafio.exception;
 
+import com.sicredi.desafio.dto.response.ApiResponse;
+import com.sicredi.desafio.dto.response.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,30 +19,36 @@ public class HandlerException {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String motivo = "Argumento do método inválido";
-        logger.error(motivo);
-        return new ResponseEntity<>(
-                motivo,
-                HttpStatus.BAD_REQUEST);
+        logger.error(motivo, ex);
+        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
+        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         String motivo = "Erro de integridade de dados";
-        String message = motivo + e.getMessage();
-        logger.error(message, e);
-        return new ResponseEntity<>(motivo, HttpStatus.BAD_REQUEST);
+        logger.error(motivo, ex);
+        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
+        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PautaException.class)
-    public ResponseEntity<String> handlePautaException(PautaException e) {
-        logger.error("Erro ao abrir sessão de votação para a pauta: {}", e.getMessage());
-        return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> handlePautaException(PautaException ex) {
+        String motivo = "Erro ao abrir sessão de votação para a pauta";
+        logger.error(motivo, ex);
+        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
+        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception e) {
-        String message = "Erro: " + e.getMessage();
-        logger.error(message, e);
-        return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> handleGeneralException(Exception ex) {
+        String motivo = "Erro geral: " + ex.getMessage();
+        logger.error(motivo, ex);
+        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
+        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
