@@ -1,6 +1,6 @@
 package com.sicredi.desafio.service;
 
-import com.sicredi.desafio.dto.PautaDTO;
+import com.sicredi.desafio.dto.request.PautaDTO;
 import com.sicredi.desafio.model.Pauta;
 
 public interface PautaService {

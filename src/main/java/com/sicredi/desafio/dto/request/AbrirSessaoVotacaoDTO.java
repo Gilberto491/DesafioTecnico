@@ -1,4 +1,4 @@
-package com.sicredi.desafio.dto;
+package com.sicredi.desafio.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

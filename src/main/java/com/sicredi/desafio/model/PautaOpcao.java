@@ -25,4 +25,6 @@ public class PautaOpcao extends EntidadeBase {
 
     private String titulo;
 
+    private Long votosRecebidos = 0L;
+
 }

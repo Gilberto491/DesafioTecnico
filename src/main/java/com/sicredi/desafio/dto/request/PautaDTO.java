@@ -1,4 +1,4 @@
-package com.sicredi.desafio.dto;
+package com.sicredi.desafio.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;

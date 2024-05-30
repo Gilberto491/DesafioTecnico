@@ -1,6 +1,6 @@
 package com.sicredi.desafio.service.impl;
 
-import com.sicredi.desafio.dto.PautaDTO;
+import com.sicredi.desafio.dto.request.PautaDTO;
 import com.sicredi.desafio.model.Pauta;
 import com.sicredi.desafio.model.PautaOpcao;
 import com.sicredi.desafio.model.enumerations.StatusPautaEnum;

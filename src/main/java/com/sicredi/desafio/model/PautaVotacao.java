@@ -22,7 +22,7 @@ public class PautaVotacao extends EntidadeBase {
     private Associado associado;
 
     @ManyToOne
-    @JoinColumn(name = "pautaOpcoesId")
+    @JoinColumn(name = "pautaOpcaoId")
     private PautaOpcao pautaOpcao;
 
 }
