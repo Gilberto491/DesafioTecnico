@@ -1,5 +1,12 @@
 # API de Pautas de Votação
 
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bNPBNh_Fi7JnwSBAzyHHW6bKiatUbDWWaA&s" alt="Sicredi Logo" width="50"/> 
+
+## Teste em Nuvem
+A API pode ser testada em nuvem no seguinte endereço: [https://desafiotecnico-ulo5.onrender.com](https://desafiotecnico-ulo5.onrender.com)
+
+> **Observação:** Os associados já estão inseridos no banco de dados com o mesmo script que se encontra na pasta `sql` em `resources`.
+
 ## Descrição
 Esta API permite a criação de pautas para votação. As pautas só podem ser votadas quando uma sessão é aberta. Após a sessão ser aberta, cada associado pode votar apenas uma vez. O tempo padrão para a pauta ficar aberta para votação é de 1 minuto, mas o usuário pode especificar um tempo diferente no endpoint de abertura de sessão.
 
@@ -71,6 +78,7 @@ Para facilitar os testes, dentro da pasta sql em resources há um script para ex
 4. Configure o arquivo application.properties com os dados do seu banco de dados PostgreSQL:
 
    ```sh
+   spring.datasource.url=jdbc:postgresql://localhost:5432/sicredi
    spring.datasource.username=SEU_USUARIO
    spring.datasource.password=SUA_SENHA
     ```
