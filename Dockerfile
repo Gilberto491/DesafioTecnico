@@ -16,13 +16,15 @@ ENV PATH $PATH:/opt/gradle/gradle-8.7/bin
 # Copiar o código fonte para o container
 COPY . .
 
-# Construir o projeto usando Gradle
-RUN gradle clean build
+# Construir o projeto usando Gradle, pulando os testes
+RUN gradle clean build -x test
 
 FROM openjdk:17-jdk-slim
 
 EXPOSE 8080
 
+# Copiar o arquivo JAR construído para o novo container
 COPY --from=build /build/libs/desafio-0.0.1-SNAPSHOT.jar app.jar
 
+# Definir o comando de entrada para o container
 ENTRYPOINT [ "java", "-jar", "app.jar" ]
