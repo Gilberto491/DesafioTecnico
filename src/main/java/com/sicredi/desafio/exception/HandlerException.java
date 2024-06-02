@@ -18,37 +18,38 @@ public class HandlerException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String motivo = "Argumento do método inválido";
-        logger.error(motivo, ex);
-        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
-        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponse("Argumento do método inválido", ex, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        String motivo = "Erro de integridade de dados";
-        logger.error(motivo, ex);
-        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
-        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponse("Erro de integridade de dados", ex, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(PautaException.class)
     public ResponseEntity<?> handlePautaException(PautaException ex) {
-        String motivo = "Erro ao abrir sessão de votação para a pauta";
-        logger.error(motivo, ex);
-        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
-        ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return buildErrorResponse("Erro ao abrir sessão de votação para a pauta", ex, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CPFNaoEncontradoException.class)
+    public ResponseEntity<?> handleCpfException(CPFNaoEncontradoException ex) {
+        return buildErrorResponse("CPF inválido", ex, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(VotacaoBloqueadaException.class)
+    public ResponseEntity<?> handleVotacaoBloqueadaException(VotacaoBloqueadaException ex) {
+        return buildErrorResponse("UNABLE_TO_VOTE", ex, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralException(Exception ex) {
-        String motivo = "Erro geral: " + ex.getMessage();
-        logger.error(motivo, ex);
-        ErrorResponse errorResponse = new ErrorResponse(motivo, HttpStatus.BAD_REQUEST.value());
+        return buildErrorResponse("Erro geral: " + ex.getMessage(), ex, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<?> buildErrorResponse(String message, Exception ex, HttpStatus status) {
+        logger.error(message, ex);
+        ErrorResponse errorResponse = new ErrorResponse(message, status.value());
         ApiResponse<ErrorResponse> response = new ApiResponse<>("Error", errorResponse);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, status);
     }
 }
