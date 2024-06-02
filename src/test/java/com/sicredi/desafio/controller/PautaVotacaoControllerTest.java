@@ -1,19 +1,31 @@
 package com.sicredi.desafio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sicredi.desafio.config.AppConfig;
 import com.sicredi.desafio.dto.request.VotoDTO;
 import com.sicredi.desafio.dto.response.ResultadoVotacaoDTO;
 import com.sicredi.desafio.service.PautaVotacaoService;
+import com.sicredi.desafio.service.impl.CPFValidadorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 
@@ -29,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PautaVotacaoController.class)
 @ActiveProfiles("test")
+@Import({CPFValidadorService.class, AppConfig.class})
 public class PautaVotacaoControllerTest {
 
     @Autowired
@@ -39,6 +52,19 @@ public class PautaVotacaoControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private MockRestServiceServer mockServer;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${callback.url.domain.externa}")
+    private String externalCallbackUrl;
+
+    @BeforeEach
+    public void setUp() {
+        this.mockServer = MockRestServiceServer.bindTo(this.restTemplate).build();
+    }
 
     @Test
     public void votar_Sucesso() throws Exception {
@@ -53,6 +79,29 @@ public class PautaVotacaoControllerTest {
                         .content(objectMapper.writeValueAsString(votoDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message").value("Voto registrado com sucesso"));
+    }
+
+    @Test
+    public void votar_CpfInvalido() throws Exception {
+        VotoDTO votoDTO = new VotoDTO();
+        votoDTO.setAssociadoId(1L);
+        votoDTO.setPautaOpcaoId(1L);
+
+        String invalidCpf = "12345678900";
+        String apiUrl = externalCallbackUrl + "/api/validate/" + invalidCpf;
+
+        this.mockServer.expect(ExpectedCount.once(),
+                        MockRestRequestMatchers.requestTo(apiUrl))
+                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+                .andRespond(MockRestResponseCreators.withStatus(HttpStatus.BAD_REQUEST));
+
+        doThrow(new IllegalArgumentException("Erro geral: CPF Inválido: " + invalidCpf))
+                .when(pautaVotacaoService).registrarVoto(anyLong(), any(VotoDTO.class));
+
+        mockMvc.perform(post("/votacao/v1/votar/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(votoDTO)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -108,7 +157,6 @@ public class PautaVotacaoControllerTest {
         mockMvc.perform(get("/votacao/v1/resultado/1"))
                 .andExpect(status().isBadRequest());
     }
-
 
 
 }
