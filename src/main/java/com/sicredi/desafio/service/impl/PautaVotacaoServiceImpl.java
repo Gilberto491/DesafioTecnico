@@ -2,6 +2,8 @@ package com.sicredi.desafio.service.impl;
 
 import com.sicredi.desafio.dto.request.VotoDTO;
 import com.sicredi.desafio.dto.response.ResultadoVotacaoDTO;
+import com.sicredi.desafio.exception.CPFNaoEncontradoException;
+import com.sicredi.desafio.exception.VotacaoBloqueadaException;
 import com.sicredi.desafio.model.Associado;
 import com.sicredi.desafio.model.Pauta;
 import com.sicredi.desafio.model.PautaOpcao;
@@ -19,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -34,20 +33,22 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
     private final PautaOpcaoRepository pautaOpcaoRepository;
     private final AssociadoRepository associadoRepository;
     private final PautaRepository pautaRepository;
+    private final CPFValidadorService cpfValidadorService;
 
     @Override
     @Transactional
     public void registrarVoto(Long pautaId, VotoDTO votoDTO) {
 
+        Pauta pauta = buscarPauta(pautaId);
         Associado associado = buscarAssociado(votoDTO.getAssociadoId());
         PautaOpcao pautaOpcao = buscarPautaOpcao(votoDTO.getPautaOpcaoId());
-        Pauta pauta = buscarPauta(pautaId);
 
         entityManager.clear();
 
         validarPautaAberta(pauta);
         validarOpcaoPautaPertencePautaEspecificada(pautaOpcao.getPauta(), pautaId);
         validarAssociadoJaVotou(votoDTO.getAssociadoId(), pautaId);
+        validarCpfAssociado(associado);
 
         PautaVotacao novoVoto = new PautaVotacao();
         novoVoto.setAssociado(associado);
@@ -62,6 +63,19 @@ public class PautaVotacaoServiceImpl implements PautaVotacaoService {
 
         entityManager.flush();
 
+    }
+
+    private void validarCpfAssociado(Associado associado) {
+        if (!cpfValidadorService.validaCpf(associado.getCpf())) {
+            throw new CPFNaoEncontradoException("CPF Inválido: " + associado.getCpf());
+        } else {
+            Random random = new Random();
+            boolean podeVotar = random.nextBoolean();
+
+            if (!podeVotar) {
+                throw new VotacaoBloqueadaException("UNABLE_TO_VOTE");
+            }
+        }
     }
 
     private Associado buscarAssociado(Long associadoId) {
