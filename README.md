@@ -3,12 +3,14 @@
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bNPBNh_Fi7JnwSBAzyHHW6bKiatUbDWWaA&s" alt="Sicredi Logo" width="50"/> 
 
 ## Teste em Nuvem
-A API pode ser testada em nuvem no seguinte endereço: [https://desafiotecnico-ulo5.onrender.com](https://desafiotecnico-ulo5.onrender.com)
+A API pode ser testada em nuvem no seguinte endereço: [http://ec2-54-88-5-181.compute-1.amazonaws.com:8080](http://ec2-54-88-5-181.compute-1.amazonaws.com:8080)
 
-> **Observação:** Os associados já estão inseridos no banco de dados com o mesmo script que se encontra na pasta `sql` em `resources`.
+> **Observação:** Os associados já estão inseridos no banco de dados com o mesmo script que se encontra na pasta `sql` em `resources`. O usuário de `id 10` possui um CPF inválido para testar os casos de erro.
 
 ## Descrição
 Esta API permite a criação de pautas para votação. As pautas só podem ser votadas quando uma sessão é aberta. Após a sessão ser aberta, cada associado pode votar apenas uma vez. O tempo padrão para a pauta ficar aberta para votação é de 1 minuto, mas o usuário pode especificar um tempo diferente no endpoint de abertura de sessão.
+
+A API possui uma integração com um serviço de [validação de CPF](https://github.com/Gilberto491/ValidaCPF). É possível que a API retorne UNABLE_TO_VOTE de acordo com a documentação do desafio.
 
 ## Endpoints da API
 - **Criação de pauta:** `POST /pauta/v1/criar`
@@ -37,6 +39,8 @@ A modelagem de dados acima mostra a estrutura das tabelas e seus relacionamentos
 Os endpoints estão documentados no Swagger, acessível pelo seguinte link após iniciar a aplicação:
 [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
+Também é possível acessar pela nuvem [aqui](http://ec2-54-88-5-181.compute-1.amazonaws.com:8080/swagger-ui/index.html)
+
 Além disso, uma coleção do Postman contendo todos os endpoints e exemplos está incluída no código dentro da pasta postman.
 
 ## Cenários de Teste
@@ -47,6 +51,9 @@ Além disso, uma coleção do Postman contendo todos os endpoints e exemplos est
 - Criação de pauta e cancelamento inválido.
 - Criação de pauta, abertura de sessão e votação.
 - Criação de pauta, abertura de sessão e votação com usuário inválido.
+- Criação de pauta, abertura de sessão e votação na pauta de um usuário com um CPF válido até retornar UNABLE_TO_VOTE.
+- Criação de pauta, abertura de sessão e votação na pauta de usuário com um CPF inválido.
+- Criação de pauta, abertura de sessão e votação na pauta de usuário com um CPF válido até votar.
 - Criação de pauta, abertura de sessão e votação com pauta inválida.
 - Criação de pauta, abertura de sessão e votação com uma opção de pauta inválida.
 - Criação de pauta, abertura de sessão e votação múltipla pelo mesmo usuário.
@@ -56,12 +63,15 @@ Além disso, uma coleção do Postman contendo todos os endpoints e exemplos est
 - Criação de pauta e tentativa de obter resultado antes de fechar a sessão.
 - Criação de pauta e tentativa de obter resultado depois de fechar a sessão.
 - Criação de pauta e tentativa de obter resultado de uma pauta inválida.
+- Criação de pauta e tentativa de obter resultado de uma pauta cancelada.
 
 ## Orientações para Teste
 Para facilitar os testes, dentro da pasta sql em resources há um script para executar os inserts dos associados. Caso queira testar apenas os endpoints de abrir sessão, cancelar pauta, votar na pauta e resultado da pauta, também há inserts para as tabelas pauta e pauta_opcao.
 
+O usuário de id `10` possui um CPF inválido para testar os casos de erro.
+
 ## Tarefas Bônus
-- **Tarefa Bônus 1:** A API de validação não está funcionando, porém eu utilizaria a biblioteca OpenFeign para consultar a validade de um CPF.
+- **Tarefa Bônus 1:** Foi utilizado o RestTemplate para fazer a integração com a [api](https://github.com/Gilberto491/ValidaCPF) de validação de cpf.
 - **Tarefa Bônus 2:** Testes de performance com Threads para enviar uma quantidade de requisições e verificar o tempo de resposta. Estes testes estão incluídos no código.
 - **Tarefa Bônus 3:** Especificação da versão nas URLs das chamadas e configuração da versão no Swagger para melhor visibilidade e facilidade de uso.
 
